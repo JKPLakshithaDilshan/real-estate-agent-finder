@@ -1,0 +1,2 @@
+AD001,System Admin,admin@realestate.com,0000000987,Admin@123,SUPER
+AD002,Kasun Wijesinghe,kasun.admin@gmail.com,+94 76 987 6550,Kasun@Admin123,STANDARD

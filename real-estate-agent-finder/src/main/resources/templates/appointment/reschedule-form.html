@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reschedule Appointment</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/shared-layout.css}" />
+    <link rel="stylesheet" th:href="@{/css/appointment-premium-pages.css}" />
+</head>
+
+<body>
+    <div th:replace="~{fragments/site-layout :: skipLink}"></div>
+    <div th:replace="~{fragments/site-layout :: siteNavbar}"></div>
+
+    <main class="container appointment-form-main content-shell">
+        <div class="appointment-intro-grid">
+            <section class="appointment-form-card surface-card mx-auto w-100">
+                <div class="mb-3">
+                    <h4 class="mb-1">Update Appointment</h4>
+                    <p class="text-secondary mb-0">Adjust schedule and set the latest appointment status.</p>
+                </div>
+
+                <form id="rescheduleForm"
+                  th:action="@{/appointments/{id}/reschedule(id=${appointment.id})}"
+                                    th:object="${appointmentForm}" method="post" class="row g-3" novalidate data-manual-submit-ux="true">
+                <div class="col-md-6">
+                    <label class="form-label" for="appointmentIdView">Appointment ID</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-hashtag"></i></span>
+                        <input id="appointmentIdView" type="text" class="form-control" th:value="${appointment.id}" readonly />
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label" for="status">Status</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-circle-check"></i></span>
+                        <select id="status" class="form-select" th:field="*{status}" th:disabled="${session.loggedInRole != 'ADMIN'}">
+                            <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"></option>
+                        </select>
+                    </div>
+                    <input type="hidden" th:if="${session.loggedInRole != 'ADMIN'}" th:field="*{status}" />
+                    <div class="form-helper">Choose the latest lifecycle status for this appointment.</div>
+                </div>
+
+                <div class="col-12" th:if="${session.loggedInRole != 'ADMIN'}">
+                    <div class="surface-card">
+                        <h6 class="mb-2"><i class="fa-solid fa-circle-info me-2"></i>Appointment Context</h6>
+                        <p class="mb-1"><span class="fw-semibold">Booking owner:</span> <span th:text="${#strings.isEmpty(currentUserName)} ? 'Current User' : currentUserName"></span></p>
+                        <p class="mb-0"><span class="fw-semibold">Agent:</span> <span th:text="${#strings.isEmpty(selectedAgentName)} ? appointment.agentId : selectedAgentName"></span></p>
+                    </div>
+                    <input id="userId" type="hidden" th:field="*{userId}" />
+                    <input id="agentId" type="hidden" th:field="*{agentId}" />
+                </div>
+
+                <div class="col-md-6" th:if="${session.loggedInRole == 'ADMIN'}">
+                    <label class="form-label" for="userId">Client ID</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                        <input id="userId" type="text" class="form-control" th:field="*{userId}" readonly />
+                    </div>
+                </div>
+
+                <div class="col-md-6" th:if="${session.loggedInRole == 'ADMIN'}">
+                    <label class="form-label" for="agentId">Agent ID</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-user-tie"></i></span>
+                        <input id="agentId" type="text" class="form-control" th:field="*{agentId}" readonly />
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label" for="appointmentDate">New Date</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-calendar-days"></i></span>
+                        <input id="appointmentDate" type="date" class="form-control" required data-future-date="true" aria-describedby="rescheduleDateHelp rescheduleDateError" />
+                    </div>
+                    <div id="rescheduleDateHelp" class="form-helper">Select the new appointment date (today or later).</div>
+                    <div id="rescheduleDateError" class="field-error" data-error-for="appointmentDate">Choose a valid date that is not in the past.</div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label" for="appointmentTime">New Time</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-clock"></i></span>
+                        <input id="appointmentTime" type="time" class="form-control" required aria-describedby="rescheduleTimeHelp rescheduleTimeError" />
+                    </div>
+                    <div id="rescheduleTimeHelp" class="form-helper">Select the updated appointment time.</div>
+                    <div id="rescheduleTimeError" class="field-error" data-error-for="appointmentTime">Choose a valid time for the selected date.</div>
+                </div>
+
+                <input id="appointmentDateTime" type="hidden" th:field="*{appointmentDateTime}" />
+
+                <div class="col-12">
+                    <label class="form-label" for="notes">Notes</label>
+                    <textarea id="notes" class="form-control" th:field="*{notes}" rows="4" placeholder="Add any reschedule notes" maxlength="500" aria-describedby="rescheduleNotesHelp rescheduleNotesError"></textarea>
+                    <div class="form-helper">Document why the appointment moved or what changed for the visit.</div>
+                    <div id="rescheduleNotesError" class="field-error" data-error-for="notes">Notes must be 500 characters or less.</div>
+                </div>
+
+                <div class="col-12 d-flex gap-2 flex-wrap mt-2 dense-actions">
+                    <button type="submit" class="btn btn-site-gold">
+                        <i class="fa-solid fa-calendar-check me-1"></i>Save Changes
+                    </button>
+                    <a th:href="@{/appointments}" class="btn btn-premium-outline">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Back to List
+                    </a>
+                </div>
+
+                <div id="rescheduleFormErrorSummary" class="field-error" role="alert" aria-live="assertive"></div>
+                </form>
+            </section>
+
+            <aside class="appointment-side-card">
+                <h4 class="mb-3">Reschedule Checklist</h4>
+                <p>Keep the consultation lifecycle clear for both clients and administrators.</p>
+                <ul>
+                    <li>Use the existing appointment ID to preserve the original booking record.</li>
+                    <li>Only valid statuses should remain visible after the update workflow.</li>
+                    <li>Capture notes when the timing or expectations changed.</li>
+                </ul>
+                <div class="appointment-helper-card mt-4">
+                    <i class="fa-solid fa-clock-rotate-left me-2"></i>Completed or cancelled appointments should not be rescheduled from the user flow.
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/site-layout :: siteFooter}"></div>
+    <div th:replace="~{fragments/site-layout :: globalUxLayer}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+        <script th:src="@{/js/validation.js}"></script>
+    <script th:src="@{/js/main.js}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateInput = document.getElementById('appointmentDate');
+            const timeInput = document.getElementById('appointmentTime');
+            const dateTimeInput = document.getElementById('appointmentDateTime');
+            const form = document.getElementById('rescheduleForm');
+            const notes = form?.querySelector('#notes');
+            const summary = form?.querySelector('#rescheduleFormErrorSummary');
+            const submitButton = form?.querySelector('button[type="submit"]');
+
+            const syncFromHidden = () => {
+                if (!dateTimeInput || !dateTimeInput.value || !dateTimeInput.value.includes('T')) {
+                    return;
+                }
+                const [datePart, timePart] = dateTimeInput.value.split('T');
+                if (dateInput) {
+                    dateInput.value = datePart;
+                }
+                if (timeInput) {
+                    timeInput.value = (timePart || '').slice(0, 5);
+                }
+            };
+
+            const syncHidden = () => {
+                if (!dateInput || !timeInput || !dateTimeInput) {
+                    return;
+                }
+                if (!dateInput.value || !timeInput.value) {
+                    dateTimeInput.value = '';
+                    return;
+                }
+                dateTimeInput.value = `${dateInput.value}T${timeInput.value}`;
+            };
+
+            const showFieldError = (input, message) => {
+                if (!input || !form) {
+                    return;
+                }
+                const errorEl = form.querySelector(`[data-error-for="${input.id}"]`);
+                input.classList.add('is-invalid');
+                input.setAttribute('aria-invalid', 'true');
+                if (errorEl) {
+                    errorEl.textContent = message;
+                    errorEl.classList.add('active');
+                }
+            };
+
+            const clearFieldError = input => {
+                if (!input || !form) {
+                    return;
+                }
+                const errorEl = form.querySelector(`[data-error-for="${input.id}"]`);
+                input.classList.remove('is-invalid');
+                input.removeAttribute('aria-invalid');
+                if (errorEl) {
+                    errorEl.classList.remove('active');
+                }
+            };
+
+            const setSubmittingState = submitting => {
+                if (!submitButton) {
+                    return;
+                }
+                if (submitting) {
+                    submitButton.disabled = true;
+                    if (!submitButton.dataset.originalText) {
+                        submitButton.dataset.originalText = submitButton.innerHTML;
+                    }
+                    submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i>Saving Changes...';
+                    return;
+                }
+                submitButton.disabled = false;
+                submitButton.innerHTML = submitButton.dataset.originalText || submitButton.innerHTML;
+            };
+
+            const validateForm = () => {
+                if (!form || !summary || !dateInput || !timeInput || !notes) {
+                    return true;
+                }
+
+                const errors = [];
+                summary.textContent = '';
+                [dateInput, timeInput, notes].forEach(field => clearFieldError(field));
+
+                notes.value = notes.value.trim();
+                syncHidden();
+
+                const selectedDate = dateInput.value ? new Date(`${dateInput.value}T00:00:00`) : null;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                if (!selectedDate || Number.isNaN(selectedDate.getTime()) || selectedDate < today) {
+                    errors.push({ field: dateInput, message: 'Select a date that is today or later.' });
+                }
+
+                if (!timeInput.value) {
+                    errors.push({ field: timeInput, message: 'Appointment time is required.' });
+                }
+
+                if (dateInput.value && timeInput.value) {
+                    const selectedDateTime = new Date(`${dateInput.value}T${timeInput.value}`);
+                    if (selectedDateTime < new Date()) {
+                        errors.push({ field: timeInput, message: 'Select a future time for the chosen date.' });
+                    }
+                }
+
+                if (notes.value.length > 500) {
+                    errors.push({ field: notes, message: 'Notes must be 500 characters or less.' });
+                }
+
+                errors.forEach(error => showFieldError(error.field, error.message));
+                if (errors.length > 0) {
+                    summary.textContent = 'Please correct the highlighted reschedule fields before saving.';
+                    errors[0].field.focus();
+                    window.SiteUx?.toast('Reschedule form contains invalid values.', 'warning', 3800);
+                    return false;
+                }
+
+                return true;
+            };
+
+            syncFromHidden();
+            dateInput?.addEventListener('change', syncHidden);
+            timeInput?.addEventListener('change', syncHidden);
+            [dateInput, timeInput, notes].forEach(field => {
+                field?.addEventListener('input', () => clearFieldError(field));
+            });
+
+            form?.addEventListener('submit', event => {
+                if (form.dataset.submitting === 'true') {
+                    event.preventDefault();
+                    return;
+                }
+
+                syncHidden();
+
+                if (!validateForm()) {
+                    event.preventDefault();
+                    form.dataset.submitting = 'false';
+                    setSubmittingState(false);
+                    window.SiteUx?.hideBusy();
+                    return;
+                }
+
+                form.dataset.submitting = 'true';
+                setSubmittingState(true);
+                window.SiteUx?.showBusy('Saving appointment changes...');
+            }, true);
+
+            window.addEventListener('pageshow', () => {
+                form.dataset.submitting = 'false';
+                setSubmittingState(false);
+                window.SiteUx?.hideBusy();
+            });
+        });
+    </script>
+</body>
+
+</html>

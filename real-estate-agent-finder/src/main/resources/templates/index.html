@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Premium real estate platform to discover trusted agents and book consultations." />
+    <title th:text="${pageTitle}">Real Estate Agent Finder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/shared-layout.css}" />
+    <link rel="stylesheet" th:href="@{/css/home-premium.css}" />
+</head>
+
+<body>
+    <div th:replace="~{fragments/site-layout :: siteNavbar}"></div>
+    <header class="hero-section">
+        <div class="container py-5">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-6 hero-copy-col">
+                    <span class="hero-chip hero-animate"><i class="fa-solid fa-award"></i> Trusted Premium Network</span>
+                    <h1 class="display-5 fw-bold text-white mt-3 mb-3 hero-title hero-animate">Find Elite Real Estate Experts for Your Next Move</h1>
+                    <div class="d-flex flex-wrap gap-2 hero-actions hero-animate">
+                        <a th:href="@{/agents}" class="btn btn-site-gold btn-lg">
+                            <i class="fa-solid fa-magnifying-glass me-2"></i>Search Agents
+                        </a>
+                        <a th:href="@{/agents/top-rated}" class="btn btn-premium-outline btn-lg text-white border-white bg-transparent">Top Rated Agents</a>
+                    </div>
+
+                    <div class="hero-search-card hero-animate">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-lg-8">
+                                <input type="text" class="form-control" placeholder="Search for top agents, locations, or specializations" aria-label="Search highlight" />
+                            </div>
+                            <div class="col-lg-4 d-grid">
+                                <a th:href="@{/agents}" class="btn btn-site-gold">Start Exploring</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 hero-image-col">
+                    <div class="hero-image-wrap hero-animate">
+                        <img class="img-fluid hero-image"
+                             src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1400&q=80"
+                             alt="Real estate consultation and property discussion" />
+                    </div>
+                </div>
+            </div>
+            <div class="row g-3 mt-4 text-center">
+                <div class="col-6 col-md-3">
+                    <div class="metric-card">
+                        <h4>
+                            <span class="metric-value"
+                                  data-kind="integer"
+                                  data-suffix="+"
+                                  th:attr="data-target=${metricAgents}"
+                                  th:text="${metricAgents} + '+'">500+</span>
+                        </h4>
+                        <p>Verified Agents</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="metric-card">
+                        <h4>
+                            <span class="metric-value"
+                                  data-kind="integer"
+                                  data-suffix="+"
+                                  th:attr="data-target=${metricAppointments}"
+                                  th:text="${metricAppointments} + '+'">2,400+</span>
+                        </h4>
+                        <p>Appointments</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="metric-card">
+                        <h4>
+                            <span class="metric-value"
+                                  data-kind="decimal"
+                                  th:attr="data-target=${metricAvgRating}"
+                                  th:text="${metricAvgRating}">4.8</span><i class="fa-solid fa-star ms-1 small"></i>
+                        </h4>
+                        <p>Avg. Rating</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="metric-card">
+                        <h4>
+                            <span class="metric-value"
+                                  data-kind="integer"
+                                  data-suffix="%"
+                                  th:attr="data-target=${metricSatisfaction}"
+                                  th:text="${metricSatisfaction} + '%'">98%</span>
+                        </h4>
+                        <p>Client Satisfaction</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="py-5 bg-light featured-network-section">
+        <div class="container">
+            <div class="section-title-row">
+                <div>
+                    <span class="section-kicker"><i class="fa-solid fa-briefcase"></i>Featured Network</span>
+                    <h2 class="section-title mt-3">Featured Agents</h2>
+                    <p class="section-subtitle">Highly trusted professionals for premium properties.</p>
+                </div>
+                <a th:href="@{/agents}" class="btn btn-premium-outline">View All Agents</a>
+            </div>
+            <div class="row g-4" th:if="${!#lists.isEmpty(featuredAgents)}">
+                <div class="col-md-6 col-lg-4" th:each="agent, stat : ${featuredAgents}">
+                    <div class="agent-card h-100">
+                        <img class="w-100 agent-photo"
+                             th:src="${#strings.isEmpty(agent.profileImage)} ? 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=900&q=80' : @{/images/agents/{filename}(filename=${agent.profileImage})}"
+                             onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=900&q=80';"
+                             alt="Professional real estate agent in meeting" />
+                        <div class="p-3">
+                            <h5 class="mb-1" th:text="${agent.name}">Featured Agent</h5>
+                            <p class="text-muted mb-2" th:text="${agent.specialization}">Specialization</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="rating-tag"><i class="fa-solid fa-star"></i> <span th:text="${agent.averageRating}">0.0</span></span>
+                                <a th:href="@{/agents/{id}(id=${agent.id})}" class="link-premium">View Profile</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${#lists.isEmpty(featuredAgents)}" class="empty-state surface-card mt-3">
+                <div class="empty-icon"><i class="fa-solid fa-user-tie"></i></div>
+                <h5 class="mb-1">No featured agents yet</h5>
+                <p class="mb-0">Approved agent profiles will appear here automatically.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 top-rated-section">
+        <div class="container">
+            <h2 class="section-title mb-2">Top Rated Agents</h2>
+            <p class="section-subtitle mb-4">Ranked by client reviews and performance.</p>
+            <div class="row g-4" th:if="${!#lists.isEmpty(topRatedAgents)}">
+                <div class="col-md-4" th:each="agent, rankStat : ${topRatedAgents}">
+                    <div class="top-rated-card h-100">
+                        <div class="top-agent-head d-flex align-items-center gap-3">
+                            <div class="top-agent-avatar-wrap">
+                                <img class="top-agent-avatar"
+                                     th:src="${#strings.isEmpty(agent.profileImage)} ? 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=320&q=80' : @{/images/agents/{filename}(filename=${agent.profileImage})}"
+                                     onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=320&q=80';"
+                                     th:alt="${agent.name}" />
+                            </div>
+                            <div class="rank-badge">#<span th:text="${rankStat.index + 1}"></span></div>
+                        </div>
+                        <h5 class="mt-3 mb-1" th:text="${agent.name}">Top Agent</h5>
+                        <p class="text-muted" th:text="${agent.specialization}">Specialization</p>
+                        <p class="mb-0"><i class="fa-solid fa-star text-warning me-1"></i><span th:text="${agent.averageRating}">0.0</span> / 5 (<span th:text="${agent.totalRatings}">0</span> ratings)</p>
+                        <a th:href="@{/agents/{id}(id=${agent.id})}" class="btn btn-site-gold btn-sm mt-3">View Agent</a>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${#lists.isEmpty(topRatedAgents)}" class="empty-state surface-card mt-3">
+                <div class="empty-icon"><i class="fa-solid fa-star"></i></div>
+                <h5 class="mb-1">No rated agents yet</h5>
+                <p class="mb-0">Top-rated leaderboard will appear once users submit ratings.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 bg-light why-choose-section">
+        <div class="container">
+            <h2 class="section-title">Why Choose Us</h2>
+            <div class="row g-4 mt-1">
+                <div class="col-md-6 col-lg-3">
+                    <div class="why-card h-100">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <h6>Verified Experts</h6>
+                        <p>Only background-checked, trusted agents are listed.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="why-card h-100">
+                        <i class="fa-solid fa-comments"></i>
+                        <h6>Authentic Reviews</h6>
+                        <p>Read genuine feedback before making decisions.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="why-card h-100">
+                        <i class="fa-solid fa-calendar-check"></i>
+                        <h6>Fast Booking</h6>
+                        <p>Schedule, reschedule, and manage appointments instantly.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="why-card h-100">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <h6>Local Market Insight</h6>
+                        <p>Work with agents who know each neighborhood deeply.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 testimonials-section">
+        <div class="container">
+            <span class="section-kicker"><i class="fa-solid fa-quote-left"></i>READ TESTIMONIALS</span>
+            <h2 class="section-title mb-2">What Client Says</h2>
+            <div class="row g-4" th:if="${!#lists.isEmpty(topReviews)}">
+                <div class="col-md-4" th:each="review : ${topReviews}">
+                    <div class="review-card h-100">
+                        <div class="mb-2 text-warning"><i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i> <i class="fa-solid fa-star"></i></div>
+                        <p class="mb-3" th:text="'&quot;' + ${review.comment} + '&quot;'">"Great experience."</p>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-circle"><i class="fa-solid fa-user"></i></div>
+                            <div>
+                                <strong th:text="${reviewerNames[review.userId] != null ? reviewerNames[review.userId] : review.userId}">Client Name</strong>
+                                <div class="small text-muted">Verified Platform Review</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${#lists.isEmpty(topReviews)}" class="empty-state surface-card mt-3">
+                <div class="empty-icon"><i class="fa-regular fa-message"></i></div>
+                <h5 class="mb-1">No testimonials yet</h5>
+                <p class="mb-0">Client testimonials will appear here after reviews are submitted.</p>
+            </div>
+
+            <div class="cta-panel mt-5">
+                <div class="row g-4 align-items-center">
+                    <div class="col-lg-8">
+                        <span class="section-kicker"><i class="fa-solid fa-key"></i>Ready to Start</span>
+                        <h3 class="mt-3">Build your next property move with the right advisor</h3>
+                    </div>
+                    <div class="col-lg-4 text-lg-end">
+                        <a th:href="@{/register}" class="btn btn-site-gold btn-lg">Create Account</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div th:replace="~{fragments/site-layout :: siteFooter}"></div>
+    <div th:replace="~{fragments/site-layout :: globalUxLayer}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+    <script th:src="@{/js/main.js}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const animatedCards = document.querySelectorAll('.agent-card, .top-rated-card, .why-card, .review-card, .process-card, .metric-card, .cta-panel');
+            const metricValues = document.querySelectorAll('.metric-value[data-target]');
+            animatedCards.forEach((card, index) => {
+                card.style.setProperty('--stagger', String(index % 6));
+            });
+
+            const animateMetric = element => {
+                if (!element || element.dataset.counted === 'true') {
+                    return;
+                }
+                const kind = element.dataset.kind || 'integer';
+                const suffix = element.dataset.suffix || '';
+                const target = Number(element.dataset.target || 0);
+                const duration = 1200;
+                const start = performance.now();
+
+                const renderValue = value => {
+                    if (kind === 'decimal') {
+                        element.textContent = value.toFixed(1) + suffix;
+                        return;
+                    }
+                    element.textContent = Math.round(value).toLocaleString() + suffix;
+                };
+
+                const tick = now => {
+                    const progress = Math.min((now - start) / duration, 1);
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    renderValue(target * eased);
+
+                    if (progress < 1) {
+                        requestAnimationFrame(tick);
+                        return;
+                    }
+
+                    renderValue(target);
+                    element.dataset.counted = 'true';
+                    element.classList.add('counted');
+                };
+
+                requestAnimationFrame(tick);
+            };
+
+            if (!('IntersectionObserver' in window)) {
+                animatedCards.forEach(card => card.classList.add('in-view'));
+                metricValues.forEach(animateMetric);
+                return;
+            }
+
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) {
+                        return;
+                    }
+                    entry.target.classList.add('in-view');
+                    observer.unobserve(entry.target);
+                });
+            }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+            animatedCards.forEach(card => observer.observe(card));
+
+            const metricObserver = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) {
+                        return;
+                    }
+                    animateMetric(entry.target);
+                    metricObserver.unobserve(entry.target);
+                });
+            }, { threshold: 0.5 });
+
+            metricValues.forEach(metric => metricObserver.observe(metric));
+        });
+    </script>
+</body>
+
+</html>

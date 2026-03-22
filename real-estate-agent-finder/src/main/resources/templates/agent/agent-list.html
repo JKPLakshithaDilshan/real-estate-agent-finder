@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Find Agents</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/shared-layout.css}" />
+    <link rel="stylesheet" th:href="@{/css/agent-premium-pages.css}" />
+</head>
+
+<body>
+    <div th:replace="~{fragments/site-layout :: siteNavbar}"></div>
+    <br>
+    <main class="container agent-list-main content-shell">
+        <div th:if="${toastSuccess}" class="d-none" data-toast-message="" data-toast-type="success" th:attr="data-toast-message=${toastSuccess}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+        <section class="directory-summary surface-card mb-4">
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-7">
+                    <h4 class="mb-2" th:if="${adminView}">Manage agent applications and approvals</h4>
+                    <h4 class="mb-2" th:if="${!adminView}">Discover the right property advisor faster</h4>
+                    <p class="mb-0" th:if="${adminView}"></p>
+                    <p class="mb-0" th:if="${!adminView}"></p>
+                </div>
+                <div class="col-lg-5">
+                    <div class="quick-facts">
+                        <div class="quick-fact">
+                            <span>Results</span>
+                            <strong th:text="${#lists.size(agents)}"></strong>
+                        </div>
+                        <div class="quick-fact">
+                            <span>Trust Signal</span>
+                            <strong th:text="${adminView} ? 'Approval Status' : 'Ratings + Reviews'"></strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex gap-2 flex-wrap mt-3" th:if="${adminView}">
+                <a th:href="@{/admin/agents/new}" class="btn btn-site-gold">
+                    <i class="fa-solid fa-user-plus me-1"></i>Create Agent
+                </a>
+                <a th:href="@{/admin/agents/pending}" class="btn btn-premium-outline">
+                    <i class="fa-solid fa-user-clock me-1"></i>Pending Applications
+                </a>
+            </div>
+        </section>
+
+        <section class="filter-card surface-card mb-4">
+            <form class="row g-3 align-items-end" th:action="${adminView} ? @{/admin/agents} : @{/agents}" method="get">
+                <div class="col-lg-6">
+                    <label class="form-label" for="q">Search Agents</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input id="q" class="form-control" type="search" name="q" th:value="${query}"
+                               placeholder="Search by ID, name, or location" />
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-lg-2" th:if="${!adminView}">
+                    <label class="form-label" for="specializationFilter">Specialization</label>
+                    <select id="specializationFilter" class="form-select">
+                        <option value="">All</option>
+                        <option value="residential">Residential</option>
+                        <option value="commercial">Commercial</option>
+                        <option value="luxury">Luxury</option>
+                        <option value="land">Land</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4 col-lg-2" th:if="${!adminView}">
+                    <label class="form-label" for="ratingFilter">Min Rating</label>
+                    <select id="ratingFilter" class="form-select">
+                        <option value="0">Any</option>
+                        <option value="3">3+</option>
+                        <option value="4">4+</option>
+                        <option value="4.5">4.5+</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4 col-lg-2 d-grid gap-2">
+                    <button type="submit" class="btn btn-site-gold">Search</button>
+                    <a th:href="${adminView} ? @{/admin/agents} : @{/agents}" class="btn btn-premium-outline">Reset</a>
+                </div>
+            </form>
+        </section>
+
+        <section th:if="${!#lists.isEmpty(agents)}" class="row g-4" id="agentGrid">
+            <div class="col-md-6 col-xl-4 agent-item"
+                 th:each="agent : ${agents}"
+                 th:attr="data-specialization=${#strings.toLowerCase(agent.specialization)},data-location=${#strings.toLowerCase(agent.location)},data-rating=${agent.averageRating}">
+                <article class="agent-show-card h-100">
+                    <img class="agent-photo"
+                        th:src="${#strings.isEmpty(agent.profileImage)} ? 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=900&q=80' : @{/images/agents/{filename}(filename=${agent.profileImage})}"
+                        onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=900&q=80';"
+                         alt="Agent profile" />
+
+                    <div class="p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="soft-tag" th:text="${agent.id}"></span>
+                            <span class="rating-pill" th:if="${!adminView}"><i class="fa-solid fa-star me-1"></i><span th:text="${agent.averageRating}"></span></span>
+                            <span class="status-pill"
+                                  th:if="${adminView}"
+                                  th:classappend="${agent.approvalStatus == 'APPROVED'} ? ' active' : (${agent.approvalStatus == 'PENDING'} ? ' warning' : ' inactive')"
+                                  th:text="${agent.approvalStatus}"></span>
+                        </div>
+
+                        <h5 class="mb-1" th:text="${agent.name}"></h5>
+                        <p class="agent-meta mb-2"><i class="fa-solid fa-briefcase me-1"></i><span th:text="${agent.specialization}"></span></p>
+                        <p class="agent-meta mb-2"><i class="fa-solid fa-location-dot me-1"></i><span th:text="${agent.location}"></span></p>
+                        <p class="agent-meta mb-3"><i class="fa-solid fa-award me-1"></i><span th:text="${agent.yearsOfExperience + ' years experience'}"></span></p>
+
+                        <div class="d-flex flex-wrap gap-2" th:if="${!adminView}">
+                            <a class="btn btn-premium-outline btn-sm" th:href="@{/agents/{id}(id=${agent.id})}">
+                                <i class="fa-solid fa-circle-info me-1"></i>View Details
+                            </a>
+                            <a class="btn btn-site-gold btn-sm" th:href="@{/appointments/new(agentId=${agent.id})}">
+                                <i class="fa-solid fa-calendar-plus me-1"></i>Book Appointment
+                            </a>
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-2" th:if="${adminView}">
+                            <a class="btn btn-premium-outline btn-sm" th:href="@{/admin/agents/{id}(id=${agent.id})}">
+                                <i class="fa-solid fa-circle-info me-1"></i>View
+                            </a>
+                            <a class="btn btn-soft-neutral btn-sm" th:href="@{/admin/agents/{id}/edit(id=${agent.id})}">
+                                <i class="fa-solid fa-pen me-1"></i>Edit
+                            </a>
+                            <form th:if="${agent.approvalStatus == 'PENDING'}" th:action="@{/admin/agents/approve/{id}(id=${agent.id})}" method="post">
+                                <button type="submit" class="btn btn-site-gold btn-sm">
+                                    <i class="fa-solid fa-check me-1"></i>Approve
+                                </button>
+                            </form>
+                            <form th:if="${agent.approvalStatus == 'PENDING'}" th:action="@{/admin/agents/reject/{id}(id=${agent.id})}" method="post">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fa-solid fa-xmark me-1"></i>Reject
+                                </button>
+                            </form>
+                            <form th:action="@{/admin/agents/{id}/delete(id=${agent.id})}" method="post"
+                                  onsubmit="return confirm('Delete this agent profile?');">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    <i class="fa-solid fa-trash me-1"></i>Delete
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section th:if="${#lists.isEmpty(agents)}" class="empty-state surface-card mt-3">
+            <div class="empty-icon"><i class="fa-solid fa-user-group"></i></div>
+            <h5 class="mb-1" th:text="${adminView} ? 'No agent records found' : 'No agents found'"></h5>
+            <p class="mb-3" th:text="${adminView} ? 'Try a broader search or create a new agent profile.' : 'Try a broader keyword or clear filters to see all agents.'"></p>
+            <a th:href="${adminView} ? @{/admin/agents} : @{/agents}" class="btn btn-premium-outline"
+               th:text="${adminView} ? 'Reset List' : 'Reset Directory'"></a>
+        </section>
+    </main>
+
+    <div th:replace="~{fragments/site-layout :: siteFooter}"></div>
+    <div th:replace="~{fragments/site-layout :: globalUxLayer}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+    <script th:src="@{/js/main.js}"></script>
+    <script th:if="${!adminView}">
+        document.addEventListener('DOMContentLoaded', () => {
+            const specialization = document.getElementById('specializationFilter');
+            const rating = document.getElementById('ratingFilter');
+            const cards = Array.from(document.querySelectorAll('.agent-item'));
+
+            const applyFilters = () => {
+                const sValue = (specialization?.value || '').trim().toLowerCase();
+                const rValue = Number(rating?.value || 0);
+
+                cards.forEach(card => {
+                    const cardSpecialization = (card.dataset.specialization || '').toLowerCase();
+                    const cardRating = Number(card.dataset.rating || 0);
+
+                    const specializationMatch = !sValue || cardSpecialization.includes(sValue);
+                    const ratingMatch = cardRating >= rValue;
+                    card.style.display = specializationMatch && ratingMatch ? '' : 'none';
+                });
+            };
+
+            specialization?.addEventListener('change', applyFilters);
+            rating?.addEventListener('change', applyFilters);
+        });
+    </script>
+</body>
+
+</html>

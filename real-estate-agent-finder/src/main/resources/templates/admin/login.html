@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/shared-layout.css}" />
+    <link rel="stylesheet" th:href="@{/css/auth-premium.css}" />
+</head>
+
+<body>
+    <div th:replace="~{fragments/site-layout :: skipLink}"></div>
+    <div th:replace="~{fragments/site-layout :: siteNavbar}"></div>
+
+    <div th:replace="~{fragments/page-header :: pageHeader(
+        'Admin Login',
+        'Secure access for platform management and system monitoring.',
+        'fa-solid fa-user-shield',
+        @{/},
+        'Back to Home',
+        true
+    )}"></div>
+
+    <main class="auth-page auth-login-page py-5 content-shell">
+        <div class="container">
+            <div th:if="${toastSuccess}" class="d-none" data-toast-message="" data-toast-type="success" th:attr="data-toast-message=${toastSuccess}"></div>
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+            <div class="row g-0 auth-shell overflow-hidden">
+                <div class="col-lg-6 d-none d-lg-block auth-visual login-visual">
+
+                </div>
+
+                <div class="col-lg-6 bg-white">
+                    <div class="auth-card p-4 p-md-5">
+                        <div class="mb-4">
+                            <h2 class="auth-title mb-2">Admin Sign In</h2>
+                            <p class="text-muted mb-0">Use your administrator credentials to enter the management console.</p>
+                        </div>
+
+
+                        <form id="adminLoginForm" th:action="@{/admin/login}" method="post" class="row g-3" novalidate data-manual-submit-ux="true">
+                            <div class="col-12">
+                                <label class="form-label" for="email">Email</label>
+                                <div class="input-group auth-input-group">
+                                    <span class="input-group-text"><i class="fa-regular fa-envelope"></i></span>
+                                    <input id="email" class="form-control" type="email" name="email" placeholder="admin@realestate.com" required data-trim="true" th:value="${param.email}" autocomplete="email" aria-describedby="adminEmailHelp adminEmailError" />
+                                </div>
+                                <div id="adminEmailError" class="field-error" data-error-for="email">Enter a valid admin email address.</div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label" for="password">Password</label>
+                                <div class="input-group auth-input-group">
+                                    <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                                    <input id="password" class="form-control" type="password" name="password" placeholder="Enter secure password" required minlength="8" autocomplete="current-password" aria-describedby="adminPasswordHelp adminPasswordError" />
+                                    <button class="btn password-toggle" type="button" data-password-toggle="password" aria-label="Show password">
+                                        <i class="fa-regular fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div id="adminPasswordError" class="field-error" data-error-for="password">Password must be at least 8 characters.</div>
+                            </div>
+
+                            <div class="col-12 d-grid mt-2"><br>
+                                <button type="submit" class="btn btn-site-gold btn-lg">
+                                    <i class="fa-solid fa-right-to-bracket me-1"></i>Login as Admin
+                                </button>
+                            </div>
+
+                            <div id="adminLoginErrorSummary" class="field-error" role="alert" aria-live="assertive"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/site-layout :: siteFooter}"></div>
+    <div th:replace="~{fragments/site-layout :: globalUxLayer}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+    <script th:src="@{/js/validation.js}"></script>
+    <script th:src="@{/js/main.js}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('adminLoginForm');
+            if (!form) {
+                return;
+            }
+
+            const email = form.querySelector('#email');
+            const password = form.querySelector('#password');
+            const summary = form.querySelector('#adminLoginErrorSummary');
+            const submitButton = form.querySelector('button[type="submit"]');
+
+            const showFieldError = (input, message) => {
+                const errorEl = form.querySelector(`[data-error-for="${input.id}"]`);
+                input.classList.add('is-invalid');
+                input.setAttribute('aria-invalid', 'true');
+                if (errorEl) {
+                    errorEl.textContent = message;
+                    errorEl.classList.add('active');
+                }
+            };
+
+            const clearFieldError = input => {
+                const errorEl = form.querySelector(`[data-error-for="${input.id}"]`);
+                input.classList.remove('is-invalid');
+                input.removeAttribute('aria-invalid');
+                if (errorEl) {
+                    errorEl.classList.remove('active');
+                }
+            };
+
+            const setSubmittingState = submitting => {
+                if (!submitButton) {
+                    return;
+                }
+                if (submitting) {
+                    submitButton.disabled = true;
+                    if (!submitButton.dataset.originalText) {
+                        submitButton.dataset.originalText = submitButton.innerHTML;
+                    }
+                    submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i>Authenticating...';
+                    return;
+                }
+                submitButton.disabled = false;
+                submitButton.innerHTML = submitButton.dataset.originalText || submitButton.innerHTML;
+            };
+
+            const validateForm = () => {
+                const errors = [];
+                summary.textContent = '';
+
+                [email, password].forEach(field => {
+                    if (field) {
+                        clearFieldError(field);
+                    }
+                });
+
+                if (email) {
+                    email.value = email.value.trim();
+                    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!email.value) {
+                        errors.push({ field: email, message: 'Admin email is required.' });
+                    } else if (!emailPattern.test(email.value)) {
+                        errors.push({ field: email, message: 'Enter a valid admin email format.' });
+                    }
+                }
+
+                if (password) {
+                    if (!password.value) {
+                        errors.push({ field: password, message: 'Password is required.' });
+                    } else if (password.value.length < 8) {
+                        errors.push({ field: password, message: 'Password must be at least 8 characters.' });
+                    }
+                }
+
+                errors.forEach(error => showFieldError(error.field, error.message));
+                if (errors.length > 0) {
+                    summary.textContent = 'Please review your credentials before continuing.';
+                    errors[0].field.focus();
+                    window.SiteUx?.toast('Admin sign-in details are incomplete.', 'warning', 3500);
+                    return false;
+                }
+
+                return true;
+            };
+
+            [email, password].forEach(field => {
+                field?.addEventListener('input', () => clearFieldError(field));
+            });
+
+            form.addEventListener('submit', event => {
+                if (form.dataset.submitting === 'true') {
+                    event.preventDefault();
+                    return;
+                }
+
+                if (!validateForm()) {
+                    event.preventDefault();
+                    form.dataset.submitting = 'false';
+                    setSubmittingState(false);
+                    window.SiteUx?.hideBusy();
+                    return;
+                }
+
+                form.dataset.submitting = 'true';
+                setSubmittingState(true);
+                window.SiteUx?.showBusy('Authenticating admin session...');
+            }, true);
+
+            window.addEventListener('pageshow', () => {
+                form.dataset.submitting = 'false';
+                setSubmittingState(false);
+                window.SiteUx?.hideBusy();
+            });
+        });
+    </script>
+</body>
+
+</html>

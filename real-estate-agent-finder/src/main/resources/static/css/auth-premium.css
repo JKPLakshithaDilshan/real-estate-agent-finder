@@ -1,0 +1,164 @@
+body {
+    font-family: "Manrope", "Poppins", sans-serif;
+    background: #f8fafc;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Playfair Display", Georgia, serif;
+}
+
+.auth-page {
+    min-height: calc(100vh - 160px);
+}
+
+.auth-shell {
+    border-radius: 18px;
+    box-shadow: 0 24px 48px rgba(15, 23, 42, 0.16);
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+}
+
+.auth-visual {
+    min-height: 620px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: 2rem;
+}
+
+.login-visual {
+    background:
+        linear-gradient(130deg, rgba(15, 23, 42, 0.94), rgba(15, 23, 42, 0.72)),
+        url("https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1300&q=80") center/cover no-repeat;
+}
+
+.auth-overlay-content {
+    color: #ffffff;
+    max-width: 440px;
+}
+
+.auth-overlay-content h1 {
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    font-weight: 700;
+    margin-top: 0.8rem;
+    margin-bottom: 0.7rem;
+}
+
+.auth-overlay-content p {
+    color: rgba(255, 255, 255, 0.82);
+    margin: 0;
+}
+
+.auth-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.38rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #f6e1a4;
+    border: 1px solid rgba(212, 160, 23, 0.6);
+    background: rgba(212, 160, 23, 0.16);
+}
+
+.dark-chip {
+    color: #7a5b00;
+    border-color: rgba(212, 160, 23, 0.6);
+    background: rgba(212, 160, 23, 0.16);
+}
+
+.auth-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.auth-title {
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.auth-input-group .input-group-text {
+    background: #f8fafc;
+    border-right: 0;
+    color: #64748b;
+}
+
+.auth-input-group .form-control {
+    border-left: 0;
+}
+
+.auth-input-group .form-control:focus {
+    box-shadow: none;
+}
+
+.auth-input-group:focus-within {
+    box-shadow: 0 0 0 0.2rem rgba(212, 160, 23, 0.18);
+    border-radius: 0.5rem;
+}
+
+.auth-link {
+    color: #b88400;
+    text-decoration: none;
+}
+
+.auth-link:hover {
+    color: #8f6800;
+    text-decoration: underline;
+}
+
+.register-card-wrapper {
+    border-radius: 18px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 22px 44px rgba(15, 23, 42, 0.12);
+}
+
+.auth-feature-list {
+    display: grid;
+    gap: 0.85rem;
+    margin-top: 1.2rem;
+}
+
+.auth-feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.85rem 0.95rem;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    background: #fbfdff;
+}
+
+.auth-feature-item i {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(212, 160, 23, 0.14);
+    color: #9a6e00;
+    flex-shrink: 0;
+}
+
+.auth-feature-item p {
+    margin: 0.15rem 0 0;
+    color: #64748b;
+    font-size: 0.92rem;
+}
+
+.auth-register-page {
+    background:
+        linear-gradient(130deg, rgba(15, 23, 42, 0.04), rgba(212, 160, 23, 0.08));
+}
+
+@media (max-width: 991.98px) {
+    .auth-shell {
+        box-shadow: 0 16px 34px rgba(15, 23, 42, 0.12);
+    }
+
+    .auth-visual {
+        min-height: 260px;
+    }
+}

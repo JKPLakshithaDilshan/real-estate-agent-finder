@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pending Agent Applications</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/admin.css}" />
+    <link rel="stylesheet" th:href="@{/css/management-premium.css}" />
+</head>
+
+<body>
+    <div class="admin-layout">
+        <div th:replace="~{fragments/admin-layout :: adminSidebar('agents')}"></div>
+
+        <main class="admin-content content-shell">
+            <div th:replace="~{fragments/admin-layout :: adminTopbar('Pending Agent Applications', 'Review and approve agent onboarding requests with a clean queue workflow.')}"></div>
+
+            <div th:if="${toastSuccess}" class="d-none" data-toast-message="" data-toast-type="success" th:attr="data-toast-message=${toastSuccess}"></div>
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+            <section class="admin-panel-card surface-card mb-3 management-toolbar">
+                <div class="panel-header">
+                    <div>
+                        <h4 class="mb-1">Pending Approval Queue</h4>
+                        <p>Process new agent submissions with quick review, approve, and reject actions.</p>
+                    </div>
+                    <div class="inline-summary">
+                        <span class="summary-chip"><i class="fa-solid fa-user-clock"></i><span th:text="${#lists.size(agents)}"></span> Pending</span>
+                    </div>
+                </div>
+
+                <div class="toolbar-grid">
+                    <div class="toolbar-col-6">
+                        <label class="form-label">Queue Status</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-hourglass-half"></i></span>
+                            <input class="form-control" type="text" th:value="${#lists.isEmpty(agents)} ? 'Queue is clear' : 'Applications awaiting review'" readonly />
+                        </div>
+                    </div>
+                    <div class="toolbar-col-6">
+                        <div class="toolbar-actions">
+                            <a th:href="@{/admin/agents/pending}" class="btn btn-premium-outline"><i class="fa-solid fa-rotate-right me-1"></i>Refresh</a>
+                            <a th:href="@{/admin/agents}" class="btn btn-soft-neutral"><i class="fa-solid fa-users-viewfinder me-1"></i>All Agents</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="admin-panel-card surface-card premium-table-shell" th:if="${!#lists.isEmpty(agents)}">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0" style="min-width: 1020px;">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Username</th>
+                                <th>NIC</th>
+                                <th>Applied At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="agent : ${agents}">
+                                <td class="fw-semibold" th:text="${agent.id}"></td>
+                                <td th:text="${agent.name}"></td>
+                                <td th:text="${agent.email}"></td>
+                                <td th:text="${agent.username}"></td>
+                                <td th:text="${agent.nicNumber}"></td>
+                                <td th:text="${#strings.isEmpty(agent.createdAt) ? '-' : agent.createdAt}"></td>
+                                <td>
+                                    <div class="d-flex gap-2 flex-wrap dense-actions">
+                                        <a class="btn btn-premium-outline btn-sm" th:href="@{/admin/agents/{id}(id=${agent.id})}">View</a>
+                                        <form th:action="@{/admin/agents/approve/{id}(id=${agent.id})}" method="post">
+                                            <button type="submit" class="btn btn-site-gold btn-sm">Approve</button>
+                                        </form>
+                                        <form th:action="@{/admin/agents/reject/{id}(id=${agent.id})}" method="post"
+                                              onsubmit="return confirm('Reject this application?');">
+                                            <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="admin-panel-card surface-card management-empty" th:if="${#lists.isEmpty(agents)}">
+                <div class="icon"><i class="fa-solid fa-circle-check"></i></div>
+                <h4>No pending applications</h4>
+                <p>All agent applications have been reviewed.</p>
+                <a th:href="@{/admin/agents}" class="btn btn-premium-outline">Back to Agent List</a>
+            </section>
+        </main>
+    </div>
+
+<div th:replace="~{fragments/site-layout :: globalUxLayer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+
+</html>

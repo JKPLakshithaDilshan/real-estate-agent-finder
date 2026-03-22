@@ -1,0 +1,10 @@
+U001,john_doe92,johndoe92@gmail.com,+94 71 456 7890,John@1234,Colombo,Land,true
+U002,nimal_perera,nimal.perera@gmail.com,+94 77 123 4567,Nimal@1234,Colombo,Residential,true
+U003,sanduni_f,sanduni.fernando@yahoo.com,+94 71 987 6543,Sanduni#2024,Kandy,Luxury,false
+U004,rizwan_m,rizwan.m@gmail.com,+94 75 334 4556,Rizwan@5678,Kurunegala,Commercial,true
+U005,kavindu_s,kavindu.s@gmail.com,+94 76 112 3344,Kavindu@123,Negombo,Apartment,true
+U006,lakshitha,info.jkplakshitha@gmail.com,0709988776,@Dilshan#1,,,true
+U007,rashmika,rashmika@gmail.com,0761122334,@rashmika#1L,matara,Land,true
+U008,kasun_perera92,kasun.perera92@gmail.com,+94 71 456 7900,Kasun@12345,Colombo,Land,true
+U009,namakna,namakna@gmail.com,07566778,namaka@Na#1,,,true
+U010,new,new@gmail.com,0775245540,@Lakshitha#1,,,true

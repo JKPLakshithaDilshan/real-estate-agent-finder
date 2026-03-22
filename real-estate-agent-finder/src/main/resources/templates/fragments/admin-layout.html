@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <aside th:fragment="adminSidebar(activeMenu)" class="admin-sidebar">
+        <h2 class="admin-brand"><i class="fa-solid fa-user-shield me-2"></i>Admin Panel</h2>
+
+        <a th:classappend="${activeMenu == 'dashboard'} ? ' active'" th:href="@{/admin/dashboard}">
+            <i class="fa-solid fa-gauge-high me-2"></i>Dashboard
+        </a>
+        <a th:classappend="${activeMenu == 'admins'} ? ' active'" th:href="@{/admin/list}">
+            <i class="fa-solid fa-user-shield me-2"></i>Manage Admins
+        </a>
+        <a th:classappend="${activeMenu == 'agents'} ? ' active'" th:href="@{/admin/agents}">
+            <i class="fa-solid fa-user-tie me-2"></i>Manage Agents
+        </a>
+        <a th:classappend="${activeMenu == 'users'} ? ' active'" th:href="@{/admin/users}">
+            <i class="fa-solid fa-users me-2"></i>Manage Users
+        </a>
+        <a th:classappend="${activeMenu == 'appointments'} ? ' active'" th:href="@{/appointments}">
+            <i class="fa-solid fa-calendar-check me-2"></i>Manage Appointments
+        </a>
+        <a th:classappend="${activeMenu == 'ratings'} ? ' active'" th:href="@{/ratings}">
+            <i class="fa-solid fa-star me-2"></i>Manage Ratings
+        </a>
+        <a th:classappend="${activeMenu == 'reviews'} ? ' active'" th:href="@{/reviews}">
+            <i class="fa-solid fa-comments me-2"></i>Manage Reviews
+        </a>
+    </aside>
+
+    <header th:fragment="adminTopbar(title, subtitle)" class="admin-topbar">
+        <div>
+            <h1 th:text="${title}">Admin</h1>
+            <p th:text="${subtitle}">Management panel</p>
+        </div>
+        <a class="btn btn-site-gold" th:href="@{/logout}">
+            <i class="fa-solid fa-right-from-bracket me-1"></i>Logout
+        </a>
+    </header>
+</body>
+
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${formMode == 'edit'} ? 'Update Rating' : 'Rate Agent'">Rate Agent</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/shared-layout.css}" />
+    <link rel="stylesheet" th:href="@{/css/management-premium.css}" />
+</head>
+
+<body>
+    <div th:replace="~{fragments/site-layout :: skipLink}"></div>
+    <div th:replace="~{fragments/site-layout :: siteNavbar}"></div>
+
+   
+    <main class="container ratings-main content-shell" style="max-width: 880px;">
+        <div th:if="${toastSuccess}" class="d-none" data-toast-message="" data-toast-type="success" th:attr="data-toast-message=${toastSuccess}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+          <form id="ratingForm" th:action="${formMode == 'edit'} ? @{/ratings/{id}/update(id=${rating.id})} : @{/ratings/save}"
+              method="post"
+              class="management-form" novalidate data-manual-submit-ux="true">
+            <div class="panel-header">
+                <div>
+                    <h3 class="mb-1" th:text="${formMode == 'edit'} ? 'Edit Rating Record' : 'New Rating Record'"></h3>
+                    <p>Provide clear score feedback while keeping user and agent context auto-linked.</p>
+                </div>
+                <span class="rating-score-display"><i class="fa-solid fa-star"></i>1 to 5 Scale</span>
+            </div>
+
+            <div class="management-form-grid">
+                <div class="form-col-12" th:if="${session.loggedInRole != 'ADMIN'}">
+                    <div class="surface-card">
+                        <h6 class="mb-2"><i class="fa-solid fa-circle-info me-2"></i>Rating Context</h6>
+                        <p class="mb-1"><span class="fw-semibold">Signed in as:</span> <span th:text="${#strings.isEmpty(currentUserName)} ? 'Current User' : currentUserName"></span></p>
+                        <p class="mb-0"><span class="fw-semibold">Agent:</span> <span th:text="${#strings.isEmpty(selectedAgentName)} ? rating.agentId : selectedAgentName"></span></p>
+                    </div>
+                    <input id="userId" type="hidden" name="userId" th:value="${rating.userId}" />
+                    <input id="agentId" type="hidden" name="agentId" th:value="${rating.agentId}" />
+                </div>
+
+                <div class="form-col-6" th:if="${session.loggedInRole == 'ADMIN'}">
+                    <label class="form-label" for="userId">User ID</label>
+                    <input id="userId" type="text" name="userId" class="form-control" th:value="${rating.userId}" placeholder="U001" required data-trim="true" minlength="2" maxlength="30" aria-describedby="ratingUserIdHelp ratingUserIdError" />
+                    <div id="ratingUserIdHelp" class="form-helper">Use the user identifier linked to the appointment history.</div>
+                    <div id="ratingUserIdError" class="field-error" data-error-for="userId">User ID is required and must be between 2 and 30 characters.</div>
+                </div>
+
+                <div class="form-col-6" th:if="${session.loggedInRole == 'ADMIN'}">
+                    <label class="form-label" for="agentId">Agent ID</label>
+                    <input id="agentId" type="text" name="agentId" class="form-control" th:value="${rating.agentId}" placeholder="A001" required data-trim="true" minlength="2" maxlength="30" aria-describedby="ratingAgentIdHelp ratingAgentIdError" />
+                    <div id="ratingAgentIdHelp" class="form-helper">Use the exact agent identifier for accurate score aggregation.</div>
+                    <div id="ratingAgentIdError" class="field-error" data-error-for="agentId">Agent ID is required and must be between 2 and 30 characters.</div>
+                </div>
+
+                <div class="form-col-6" th:classappend="${session.loggedInRole == 'ADMIN'} ? '' : ' form-col-12'">
+                    <label class="form-label" for="score">Score (1-5)</label>
+                    <input id="score" type="number" name="score" min="1" max="5" step="1" class="form-control" th:value="${rating.score}" required aria-describedby="scoreHelp scoreError" />
+                    <div class="form-helper">Use whole-number ratings to keep scoring consistent across the platform.</div>
+                    <div id="scoreError" class="field-error" data-error-for="score">Score must be a whole number between 1 and 5.</div>
+                </div>
+            </div>
+
+            <div class="form-actions mt-4 dense-actions">
+                <button type="submit" class="btn btn-site-gold" th:text="${formMode == 'edit'} ? 'Update Rating' : 'Submit Rating'"></button>
+                <a th:href="@{/ratings(agentId=${rating.agentId})}" class="btn btn-premium-outline">Back to Ratings</a>
+            </div>
+
+            <div id="ratingFormErrorSummary" class="field-error" role="alert" aria-live="assertive"></div>
+        </form>
+    </main>
+
+    <div th:replace="~{fragments/site-layout :: siteFooter}"></div>
+    <div th:replace="~{fragments/site-layout :: globalUxLayer}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+    <script th:src="@{/js/validation.js}"></script>
+    <script th:src="@{/js/main.js}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('ratingForm');
+            if (!form) {
+                return;
+            }
+
+            const userId = form.querySelector('#userId');
+            const agentId = form.querySelector('#agentId');
+            const score = form.querySelector('#score');
+            const summary = form.querySelector('#ratingFormErrorSummary');
+            const submitButton = form.querySelector('button[type="submit"]');
+
+            const showFieldError = (input, message) => {
+                const errorEl = form.querySelector(`[data-error-for="${input.id}"]`);
+                input.classList.add('is-invalid');
+                input.setAttribute('aria-invalid', 'true');
+                if (errorEl) {
+                    errorEl.textContent = message;
+                    errorEl.classList.add('active');
+                }
+            };
+
+            const clearFieldError = input => {
+                const errorEl = form.querySelector(`[data-error-for="${input.id}"]`);
+                input.classList.remove('is-invalid');
+                input.removeAttribute('aria-invalid');
+                if (errorEl) {
+                    errorEl.classList.remove('active');
+                }
+            };
+
+            const setSubmittingState = submitting => {
+                if (!submitButton) {
+                    return;
+                }
+                if (submitting) {
+                    submitButton.disabled = true;
+                    if (!submitButton.dataset.originalText) {
+                        submitButton.dataset.originalText = submitButton.innerHTML;
+                    }
+                    submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i>Saving Rating...';
+                    return;
+                }
+                submitButton.disabled = false;
+                submitButton.innerHTML = submitButton.dataset.originalText || submitButton.innerHTML;
+            };
+
+            const validateForm = () => {
+                const errors = [];
+                summary.textContent = '';
+                [userId, agentId, score].forEach(field => clearFieldError(field));
+
+                userId.value = (userId.value || '').trim();
+                agentId.value = (agentId.value || '').trim();
+
+                if (!userId.value || userId.value.length < 2 || userId.value.length > 30) {
+                    errors.push({ field: userId, message: 'User ID must be between 2 and 30 characters.' });
+                }
+                if (!agentId.value || agentId.value.length < 2 || agentId.value.length > 30) {
+                    errors.push({ field: agentId, message: 'Agent ID must be between 2 and 30 characters.' });
+                }
+
+                const parsedScore = Number(score.value);
+                if (!Number.isInteger(parsedScore) || parsedScore < 1 || parsedScore > 5) {
+                    errors.push({ field: score, message: 'Score must be an integer from 1 to 5.' });
+                }
+
+                errors.forEach(error => showFieldError(error.field, error.message));
+                if (errors.length > 0) {
+                    summary.textContent = 'Please fix the highlighted rating details before submitting.';
+                    if (errors[0].field.type !== 'hidden') {
+                        errors[0].field.focus();
+                    }
+                    window.SiteUx?.toast('Rating form has invalid fields.', 'warning', 3600);
+                    return false;
+                }
+
+                return true;
+            };
+
+            [userId, agentId, score].forEach(field => {
+                field?.addEventListener('input', () => clearFieldError(field));
+            });
+
+            form.addEventListener('submit', event => {
+                if (form.dataset.submitting === 'true') {
+                    event.preventDefault();
+                    return;
+                }
+
+                if (!validateForm()) {
+                    event.preventDefault();
+                    form.dataset.submitting = 'false';
+                    setSubmittingState(false);
+                    window.SiteUx?.hideBusy();
+                    return;
+                }
+
+                form.dataset.submitting = 'true';
+                setSubmittingState(true);
+                window.SiteUx?.showBusy('Submitting rating...');
+            }, true);
+
+            window.addEventListener('pageshow', () => {
+                form.dataset.submitting = 'false';
+                setSubmittingState(false);
+                window.SiteUx?.hideBusy();
+            });
+        });
+    </script>
+</body>
+
+</html>

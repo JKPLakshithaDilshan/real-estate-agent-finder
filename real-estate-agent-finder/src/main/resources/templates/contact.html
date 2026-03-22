@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Contact EstateFind to connect with our support and partnerships team." />
+    <title th:text="${pageTitle}">Contact Us | Real Estate Agent Finder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/shared-layout.css}" />
+    <link rel="stylesheet" th:href="@{/css/contact-premium.css}" />
+</head>
+
+<body>
+    <div th:replace="~{fragments/site-layout :: skipLink}"></div>
+    <div th:replace="~{fragments/site-layout :: siteNavbar}"></div>
+
+    <main id="main-content" class="contact-main content-shell">
+        <header class="contact-hero py-5">
+            <div class="container py-2">
+                <section class="hero-grid reveal-anim">
+                    <article class="hero-copy">
+                        <p class="editorial-kicker">Contact EstateFind</p>
+                        <h1 class="hero-title mb-3">A Modern Contact Experience for High-Intent Property Decisions</h1>
+                        <p class="hero-lead mb-4">Get direct support for agent discovery, appointments, and platform onboarding through a streamlined communication flow.</p>
+                        <div class="hero-meta">
+                            <span><i class="fa-solid fa-phone"></i> +94 11 245 8890</span>
+                            <span><i class="fa-solid fa-envelope"></i> support@estatefind.com</span>
+                            <span><i class="fa-solid fa-clock"></i> Mon-Sat, 8:00 AM - 8:00 PM</span>
+                        </div>
+                        <div class="hero-badges mt-4">
+                            <span class="meta-chip"><i class="fa-solid fa-bolt"></i> Fast Replies</span>
+                            <span class="meta-chip"><i class="fa-solid fa-shield-halved"></i> Secure Handling</span>
+                            <span class="meta-chip"><i class="fa-solid fa-user-tie"></i> Expert Support</span>
+                        </div>
+                    </article>
+
+                    <article class="hero-image">
+                        <img src="https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=1400&q=80"
+                             alt="Modern glass real estate office building" />
+                        <div class="hero-image-overlay">
+                            <p class="editorial-kicker mb-1">Live Contact Desk</p>
+                            <h5 class="mb-0">Average First Response: 2h 15m</h5>
+                        </div>
+                    </article>
+                </section>
+            </div>
+        </header>
+
+        <section class="container contact-stats reveal-anim" style="animation-delay: 0.08s;">
+            <article class="stat-card">
+                <span class="label">Approved Agents</span>
+                <strong th:text="${approvedAgents}">0</strong>
+            </article>
+            <article class="stat-card">
+                <span class="label">Appointments</span>
+                <strong th:text="${appointments}">0</strong>
+            </article>
+            <article class="stat-card">
+                <span class="label">Client Reviews</span>
+                <strong th:text="${reviews}">0</strong>
+            </article>
+            <article class="stat-card">
+                <span class="label">Response Window</span>
+                <strong>&lt; 24h</strong>
+            </article>
+        </section>
+
+        <section class="container editorial-feature reveal-anim" style="animation-delay: 0.12s;">
+            <article class="feature-image">
+                <img src="https://images.unsplash.com/photo-1600607687644-c7171b42498f?auto=format&fit=crop&w=1400&q=80"
+                     alt="Real estate discussion in modern interior" />
+            </article>
+            <article class="feature-copy">
+                <p class="editorial-kicker">Editorial Contact Story</p>
+                <h2>Every High-Value Property Move Starts with a Better Conversation</h2>
+                <p>Our team is trained to respond with actionable answers, not generic replies. Share your goal and we will guide you to the right next step with clear timelines and context.</p>
+            </article>
+        </section>
+
+        <section class="container contact-grid mb-5 reveal-anim" style="animation-delay: 0.16s;">
+            <article class="contact-form-card">
+                <div th:if="${toastSuccess}" class="alert alert-success" th:text="${toastSuccess}"></div>
+                <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+                <h3 class="mb-2">Send Us a Message</h3>
+                <p class="text-muted mb-3">We usually respond within one business day.</p>
+
+                <form th:action="@{/contact}" method="post" class="row g-3 needs-validation" novalidate>
+                    <div class="col-md-6">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input id="name" name="name" type="text" class="form-control" placeholder="John Doe" required minlength="3" maxlength="80" />
+                    </div>
+                    <div class="col-md-6">
+                        <label for="email" class="form-label">Email</label>
+                        <input id="email" name="email" type="email" class="form-control" placeholder="you@example.com" required />
+                    </div>
+                    <div class="col-12">
+                        <label for="subject" class="form-label">Subject</label>
+                        <input id="subject" name="subject" type="text" class="form-control" placeholder="How can we help?" required minlength="4" maxlength="120" />
+                    </div>
+                    <div class="col-12">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea id="message" name="message" rows="5" class="form-control" placeholder="Tell us about your request..." required minlength="10" maxlength="1500"></textarea>
+                    </div>
+                    <div class="col-12 d-grid">
+                        <button type="submit" class="btn btn-dark btn-lg">Submit Message</button>
+                    </div>
+                </form>
+            </article>
+
+            <article class="magazine-panel">
+                <div class="mag-card mag-large">
+                    <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80"
+                         alt="Premium residential property" />
+                    <div class="overlay">
+                        <p class="editorial-kicker mb-2">Consultation Team</p>
+                        <h4>Agent matching support tuned to your market, timeline, and goals.</h4>
+                    </div>
+                </div>
+
+                <div class="mag-subgrid">
+                    <div class="mag-card">
+                        <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1000&q=80"
+                             alt="Urban high-rise real estate skyline" />
+                        <div class="body">
+                            <h5>Partnerships</h5>
+                            <p>For broker networks and enterprise collaboration inquiries.</p>
+                        </div>
+                    </div>
+                    <div class="quote-card">
+                        <p class="quote-mark">&quot;</p>
+                        <blockquote>Trust grows faster when communication is clear, immediate, and transparent.</blockquote>
+                        <p class="source">EstateFind Team</p>
+                    </div>
+                </div>
+
+                <div class="contact-info-card">
+                    <h6 class="mb-2">Direct Contact</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li><i class="fa-solid fa-location-dot"></i> 18, Landmark Avenue, Colombo</li>
+                        <li><i class="fa-solid fa-envelope"></i> support@estatefind.com</li>
+                        <li><i class="fa-solid fa-phone"></i> +94 11 245 8890</li>
+                    </ul>
+                </div>
+            </article>
+        </section>
+
+        <section class="container principles mb-5 reveal-anim" style="animation-delay: 0.2s;">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h2 class="mb-2">Our Contact Principles</h2>
+                    <p>Publication-style clarity with actionable responses.</p>
+                </div>
+                <div class="col-lg-8">
+                    <div class="principle-list">
+                        <div class="item">
+                            <span>01</span>
+                            <div>
+                                <h6>Fast First Response</h6>
+                                <p class="mb-0">We prioritize initial replies so your next move is never delayed.</p>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <span>02</span>
+                            <div>
+                                <h6>Direct Guidance</h6>
+                                <p class="mb-0">Every response includes clear steps, not generic support copy.</p>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <span>03</span>
+                            <div>
+                                <h6>Client-First Tone</h6>
+                                <p class="mb-0">Communication stays professional, concise, and helpful.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div th:replace="~{fragments/site-layout :: siteFooter}"></div>
+    <div th:replace="~{fragments/site-layout :: globalUxLayer}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+    <script th:src="@{/js/validation.js}"></script>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+
+</html>
